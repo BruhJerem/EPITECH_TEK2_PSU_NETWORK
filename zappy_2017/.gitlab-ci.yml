@@ -1,0 +1,67 @@
+image: gcc
+
+stages:
+    - build
+    - norm_check
+
+build_libs:
+    stage: build
+    script: make libs
+    tags: ["gcc"]
+    artifacts:
+        paths:
+            - libsocket.a
+            - libtools.a
+
+build_server:
+    stage: build
+    script: make libs && make server
+    tags: ["gcc"]
+    artifacts:
+        paths:
+            - zappy_server
+            
+build_client_ai:
+    stage: build
+    script: make libs && make client
+    tags: ["gcc"]
+    artifacts:
+        paths:
+            - zappy_ai
+
+norm_check_lib_socket:
+    stage: norm_check
+    script: ./tests/norm_check --file src/lib-socket/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+    tags: ["gcc"]
+
+norm_check_lib_tools:
+    stage: norm_check
+    script: ./tests/norm_check --file src/lib-tools/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+    tags: ["gcc"]
+
+norm_check_server:
+    stage: norm_check
+    script:
+      - ./tests/norm_check --file src/server/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+      - ./tests/norm_check --file src/server/arg_parser/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+      - ./tests/norm_check --file src/server/cmd/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+      - ./tests/norm_check --file src/server/game/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+      - ./tests/norm_check --file src/server/list/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+      - ./tests/norm_check --file src/server/map/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+      - ./tests/norm_check --file src/server/network/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+    tags: ["gcc"]
+
+norm_check_client:
+    stage: norm_check
+    script: ./tests/norm_check --file src/client/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+    tags: ["gcc"]
+
+norm_check_ai:
+    stage: norm_check
+    script: ./tests/norm_check --file src/ia/*.c --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+    tags: ["gcc"]
+    
+norm_check_ui:
+    stage: norm_check
+    script: ./tests/norm_check --file src/ui/*.cpp --no-tree --ignore BLOCK_COMMENT_STYLE,CONST_STRUCT
+    tags: ["gcc"]
